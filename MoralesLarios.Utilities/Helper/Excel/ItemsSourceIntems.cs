@@ -26,9 +26,25 @@ namespace MoralesLarios.Utilities.Helper.Excel
 
             var type = GetElementType(newType);
 
-            var newItems = builderObjects.BuildObject(dataStr, type, showErrorMessages, cancelWithErrors);
+            var columns = GetColumnBinding(d);
+
+            var newItems = builderObjects.BuildObject(dataStr, type, showErrorMessages, cancelWithErrors, columns);
 
             InsertData(items, newItems);
+        }
+
+        private List<string> GetColumnBinding(DependencyObject dependencyObject)
+        {
+            var itemsControl = dependencyObject as ItemsControl;
+
+            var result = itemsControl.ItemsSource as IList;
+            List<string> columns = new List<string>();
+            foreach (DataGridBoundColumn c in (itemsControl as DataGrid).Columns)
+            {
+                Console.WriteLine("Column {0}", (c.Binding as System.Windows.Data.Binding).Path.Path);
+                columns.Add((c.Binding as System.Windows.Data.Binding).Path.Path);
+            }
+            return columns;
         }
 
         private IList GetItemsFormDependencyProperty(DependencyObject dependencyObject)
@@ -36,6 +52,7 @@ namespace MoralesLarios.Utilities.Helper.Excel
             var itemsControl = dependencyObject as ItemsControl;
 
             var result = itemsControl.ItemsSource as IList;
+   
 
             if(result == null)
             {

@@ -30,6 +30,7 @@ namespace MoralesLarios.Utilities.Helper.Excel
                         case "System.Double"  : resultado = double.Parse(valor); break;
                         case "System.Decimal" : resultado = decimal.Parse(valor); break;
                         case "System.Int64"   : resultado = long.Parse(valor); break;
+                        case "System.Boolean" : resultado = Boolean.Parse(valor); break;
                         case "System.Nullable":
                             string tipoDelNulable = propiedad.PropertyType.FullName.Split('`')[1];
                             if (tipoDelNulable.Contains("System.DateTime")) resultado = string.IsNullOrEmpty(valor) ? null : (DateTime?)DateTime.Parse(valor);

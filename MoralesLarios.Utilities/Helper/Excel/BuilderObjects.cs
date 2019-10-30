@@ -12,7 +12,7 @@ namespace MoralesLarios.Utilities.Helper.Excel
     {
 
 
-        public IEnumerable<object> BuildObject(string data, Type type, bool showErrorMessages, bool cancelWithErrors)
+        public IEnumerable<object> BuildObject(string data, Type type, bool showErrorMessages, bool cancelWithErrors, List<string> columnNames)
         {
             var result = new List<object>();
 
@@ -28,7 +28,7 @@ namespace MoralesLarios.Utilities.Helper.Excel
 
                 try
                 {
-                    resultObj = BuildData(lineDef, type);
+                    resultObj = BuildData(lineDef, type, columnNames);
 
                     result.Add(resultObj);
                 }
@@ -47,7 +47,7 @@ namespace MoralesLarios.Utilities.Helper.Excel
         }
 
 
-        public object BuildData(string line, Type type)
+        public object BuildData(string line, Type type, List<string> columnNames)
         {
             var fields = line.Split('\t');
 
@@ -57,9 +57,24 @@ namespace MoralesLarios.Utilities.Helper.Excel
 
             for (int i = 0; i < fields.Count(); i++)
             {
-                var value = Converters.ConverterTo(fields[i], properties[i]);
+                bool found = false;
+                for(int j = 0; j < properties.Count(); j++)
+                {
+                    //Console.WriteLine("{0} {1}", properties[j].Name, columnNames[i]);
+                    if (properties[j].Name == columnNames[i])
+                    {
+                        //Console.WriteLine("{0}={1}", properties[j].Name, fields[i]);
+                        var value = Converters.ConverterTo(fields[i], properties[j]);
 
-                properties[i].SetValue(result, value);
+                        properties[j].SetValue(result, value);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    Console.WriteLine("Couldn't find match for {0}", columnNames[i]);
+                }
             }
 
             return result;
